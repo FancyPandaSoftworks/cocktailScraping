@@ -1,0 +1,13 @@
+name: cocktail
+title: cocktail
+username:
+account: oscarhsieh
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 557718
+bundleId: 1688282
+url: https://oscarhsieh.shinyapps.io/cocktail/
+when: 1541625374.54929
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: scraper.R

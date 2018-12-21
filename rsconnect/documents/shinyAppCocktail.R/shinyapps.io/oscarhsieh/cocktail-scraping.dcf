@@ -1,0 +1,13 @@
+name: cocktail-scraping
+title: cocktail-scraping
+username:
+account: oscarhsieh
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 558823
+bundleId: 1688182
+url: https://oscarhsieh.shinyapps.io/cocktail-scraping/
+when: 1541623041.95096
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: mycocktail.csv
