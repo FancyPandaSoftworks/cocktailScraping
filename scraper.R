@@ -15,7 +15,7 @@ library(purrr)
 library(tidyr)
 library(dplyr)
 library(data.table)
-
+library(splitstackshape)
 
 ###################
 ###Preprocessing###
@@ -216,28 +216,38 @@ myCocktail$`7`<- as.character(myCocktail$`7`)
 myCocktail$`8`<- as.character(myCocktail$`8`)
 myCocktail$`9`<- as.character(myCocktail$`9`)
 
-test <- myCocktail
-################################################################################
-###Some cocktails aren't show correctly, those are investigated and corrected###
-################################################################################
-
-
-###Split the ingredients based on certain regular expression###
+###Names of the cocktails become a column###
 myCocktail$cocktailName <- rownames(myCocktail)
-myCocktail <-myCocktail %>%
-mutate(`6` = strsplit(as.character(`6`), "~~~")) %>%
-unnest(`6`)
-myCocktail <-myCocktail %>%
-mutate(`9` = strsplit(as.character(`9`), "~~~")) %>%
-unnest(`9`)
+
 ###first row to colnames###
 colnames(myCocktail)<- myCocktail[1,]
+
 ###Remove first row###
 myCocktail <- myCocktail[c(-1),]
+
 ###Change column name
-colnames(myCocktail)[8]<- "cocktailName"
+names(myCocktail)[names(myCocktail)=="attributes"] <- "cocktailName"
+
 ###Reindex###
 row.names(myCocktail)<- 1:nrow(myCocktail)
+
+################################################################################
+###Some cocktails aren't shown correctly, those are investigated and corrected###
+################################################################################
+myCocktail <- myCocktail
+
+###Split the ingredients based on certain regular expression###
+myCocktail <- cSplit(myCocktail, "IBA specifiedingredients", sep = "~~~", direction = "long")
+myCocktail <- cSplit(myCocktail, "Commonly used ingredients", sep = "~~~", direction = "long")
+
+# ###first row to colnames###
+# colnames(myCocktail)<- myCocktail[1,]
+# ###Remove first row###
+# myCocktail <- myCocktail[c(-1),]
+# ###Change column name
+# colnames(myCocktail)[8]<- "cocktailName"
+# ###Reindex###
+# row.names(myCocktail)<- 1:nrow(myCocktail)
 ########################
 ###Removing cocktails###
 ########################
