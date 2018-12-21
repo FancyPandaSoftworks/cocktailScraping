@@ -144,7 +144,7 @@ for (i in 8:34) {
           
           ###Change \n into <br/> of all tables###
           for (k in 1:nrow(cocktailDf)) {
-            cocktailDf[k,2] <- gsub("\n", "NNN",cocktailDf[k,2])
+            cocktailDf[k,2] <- gsub("\n", "~~~",cocktailDf[k,2])
           }
           
           ###Merging the cocktails with the cocktail table###
@@ -168,7 +168,6 @@ for (i in 8:34) {
 ###Start preprocessing the dataframe so it can be used in the shinyapp###
 #########################################################################
 #########################################################################
-
 
 #################################
 ###Column and row manipulation###
@@ -217,15 +216,7 @@ myCocktail$`7`<- as.character(myCocktail$`7`)
 myCocktail$`8`<- as.character(myCocktail$`8`)
 myCocktail$`9`<- as.character(myCocktail$`9`)
 
-
-###first row to colnames###
-colnames(myCocktail)<- myCocktail[1,]
-###Remove first row###
-myCocktail <- myCocktail[c(-1),]
-###Change column name
-colnames(myCocktail)[8]<- "cocktailName"
-###Reindex###
-row.names(myCocktail)<- 1:nrow(myCocktail)
+test <- myCocktail
 ################################################################################
 ###Some cocktails aren't show correctly, those are investigated and corrected###
 ################################################################################
@@ -234,11 +225,19 @@ row.names(myCocktail)<- 1:nrow(myCocktail)
 ###Split the ingredients based on certain regular expression###
 myCocktail$cocktailName <- rownames(myCocktail)
 myCocktail <-myCocktail %>%
-mutate(`6` = strsplit(as.character(`6`), "NNN")) %>%
+mutate(`6` = strsplit(as.character(`6`), "~~~")) %>%
 unnest(`6`)
 myCocktail <-myCocktail %>%
-mutate(`9` = strsplit(as.character(`9`), "NNN")) %>%
+mutate(`9` = strsplit(as.character(`9`), "~~~")) %>%
 unnest(`9`)
+###first row to colnames###
+colnames(myCocktail)<- myCocktail[1,]
+###Remove first row###
+myCocktail <- myCocktail[c(-1),]
+###Change column name
+colnames(myCocktail)[8]<- "cocktailName"
+###Reindex###
+row.names(myCocktail)<- 1:nrow(myCocktail)
 ########################
 ###Removing cocktails###
 ########################
