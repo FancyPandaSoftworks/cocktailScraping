@@ -130,7 +130,7 @@ for (i in 8:34) {
           cocktailName<- gsub('[[:punct:]]aka.*',"",cocktailName)
           ###If the cocktail already exists, skip###
           if(cocktailName %in% colnames(cocktailList)){
-            print(webList$webList[i])
+            #print(webList$webList[i])
             next
             
           }
@@ -161,13 +161,14 @@ for (i in 8:34) {
   }
 }
 
-###End Crawling###
+###End of crawling###
 
 #########################################################################
 #########################################################################
 ###Start preprocessing the dataframe so it can be used in the shinyapp###
 #########################################################################
 #########################################################################
+
 
 #################################
 ###Column and row manipulation###
@@ -196,11 +197,15 @@ myCocktail <- myCocktail[-c(1),]
 ###Reindex###
 row.names(myCocktail)<- 1:nrow(myCocktail)
 View(myCocktail)
-#View(myCocktail[,order(names(myCocktail))])
+
+###Transpose the dataframe so the cocktails are rows and variables become columns###
 myCocktail <- as.data.frame((t(myCocktail)))
+
+
 ###########################
 ###Cocktail manipulation###
 ###########################
+
 ###Change factor to character so it can be split###
 myCocktail$`1`<- as.character(myCocktail$`1`)
 myCocktail$`2`<- as.character(myCocktail$`2`)
@@ -211,6 +216,21 @@ myCocktail$`6`<- as.character(myCocktail$`6`)
 myCocktail$`7`<- as.character(myCocktail$`7`)
 myCocktail$`8`<- as.character(myCocktail$`8`)
 myCocktail$`9`<- as.character(myCocktail$`9`)
+
+
+###first row to colnames###
+colnames(myCocktail)<- myCocktail[1,]
+###Remove first row###
+myCocktail <- myCocktail[c(-1),]
+###Change column name
+colnames(myCocktail)[8]<- "cocktailName"
+###Reindex###
+row.names(myCocktail)<- 1:nrow(myCocktail)
+################################################################################
+###Some cocktails aren't show correctly, those are investigated and corrected###
+################################################################################
+
+
 ###Split the ingredients based on certain regular expression###
 myCocktail$cocktailName <- rownames(myCocktail)
 myCocktail <-myCocktail %>%
@@ -219,14 +239,6 @@ unnest(`6`)
 myCocktail <-myCocktail %>%
 mutate(`9` = strsplit(as.character(`9`), "NNN")) %>%
 unnest(`9`)
-###first row to colnames##3
-colnames(myCocktail)<- myCocktail[1,]
-###Remove first row###
-myCocktail <- myCocktail[c(-1),]
-###Change column name
-colnames(myCocktail)[8]<- "cocktailName"
-###Reindex###
-row.names(myCocktail)<- 1:nrow(myCocktail)
 ########################
 ###Removing cocktails###
 ########################
@@ -240,9 +252,7 @@ myCocktail <- myCocktail[!myCocktail$cocktailName=="pop",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="pop",]
 ###Cocktail without a type gets removed###
 myCocktail<-myCocktail[!is.na(myCocktail$Type),]
+View(myCocktail)
 
-############################################################################################################
-###Some cocktails aren't show correctly, those are investigated, corrected or removed if it isn't fixable###
-############################################################################################################
 ###Write###
 write.csv(myCocktail, "myCocktail.csv")
