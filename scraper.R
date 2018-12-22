@@ -200,11 +200,6 @@ View(myCocktail)
 ###Transpose the dataframe so the cocktails are rows and variables become columns###
 myCocktail <- as.data.frame((t(myCocktail)))
 
-
-###########################
-###Cocktail manipulation###
-###########################
-
 ###Change factor to character so it can be split###
 myCocktail$`1`<- as.character(myCocktail$`1`)
 myCocktail$`2`<- as.character(myCocktail$`2`)
@@ -231,34 +226,68 @@ names(myCocktail)[names(myCocktail)=="attributes"] <- "cocktailName"
 ###Reindex###
 row.names(myCocktail)<- 1:nrow(myCocktail)
 
-################################################################################
-###Some cocktails aren't shown correctly, those are investigated and corrected###
-################################################################################
-myCocktail <- myCocktail
-
 ###Split the ingredients based on certain regular expression###
 myCocktail <- cSplit(myCocktail, "IBA specifiedingredients", sep = "~~~", direction = "long")
 myCocktail <- cSplit(myCocktail, "Commonly used ingredients", sep = "~~~", direction = "long")
+myCocktail <- myCocktail999
 
-# ###first row to colnames###
-# colnames(myCocktail)<- myCocktail[1,]
-# ###Remove first row###
-# myCocktail <- myCocktail[c(-1),]
-# ###Change column name
-# colnames(myCocktail)[8]<- "cocktailName"
-# ###Reindex###
-# row.names(myCocktail)<- 1:nrow(myCocktail)
+#################################################################################
+###Some cocktails aren't shown correctly, those are investigated and corrected###
+#################################################################################
+
+###Zombie was not shown correctly because the ingredients were in the drinkware column###
+myCocktail <- cSplit(myCocktail, "Standard drinkware", sep = "~~~", direction = "long")
+if(myCocktail$cocktailName=="Zombie"){
+  myCocktail$`Commonly used ingredients`<- myCocktail$`Standard drinkware`
+}
+
+####!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###
+###WARNING WARNING WARNING WARNING WARNING WARNING###
+###!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###
+
+###It seems like there are some ingredients in the "Ingredients as listed at CocktailDB" column. ###
+###Maybe this column needs to be added in the dataframe, but we will see###
+
+####!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###
+###WARNING WARNING WARNING WARNING WARNING WARNING###
+###!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###
+
+
+
 ########################
 ###Removing cocktails###
 ########################
-###Remove unneeded cocktails###
+
+###Bobby burns has the ingredients in a different column, but I am not interested in this one anyway###
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Bobby Burns",]
+
+###Not an interesting shot###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Astro pop",]
+
+###This is the basic of all Fizz cocktails, so this one is empty. Thus, we remove it###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Fizz",]
+
+###Bad version of B-52###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Baby Guinness",]
-myCocktail <- myCocktail[!myCocktail$cocktailName=="Black Velvet",]
+
+
+###Drink I would never make anyway###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="BLT",]
-myCocktail <- myCocktail[!myCocktail$cocktailName=="pop",]
-myCocktail <- myCocktail[!myCocktail$cocktailName=="pop",]
+
+
+###No proper description###
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Black Velvet",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Chicago Cocktail",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Club-Mate",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="El Toro Loco",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Pimm's",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Red Russian",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Salmiakki Koskenkorva",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Shirley Temple",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Sours",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Toronto",]
+
+
 ###Cocktail without a type gets removed###
 myCocktail<-myCocktail[!is.na(myCocktail$Type),]
 View(myCocktail)

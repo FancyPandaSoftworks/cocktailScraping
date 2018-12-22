@@ -156,7 +156,7 @@ server <- function(input, output){
   
   #description below the table
   output$descriptionWhiskey <- renderText({
-    paste("<h4><br><br><br>",unique(myCocktail$description[myCocktail$cocktail==input$cocktailWhiskey]), "</h4>") 
+    paste("<h4>",unique(myCocktail$description[myCocktail$cocktail==input$cocktailWhiskey]), "</h4>") 
   })
   
 }
