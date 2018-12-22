@@ -163,11 +163,11 @@ for (i in 8:34) {
 
 ###End of crawling###
 
-#########################################################################
-#########################################################################
-###Start preprocessing the dataframe so it can be used in the shinyapp###
-#########################################################################
-#########################################################################
+#######################################
+#######################################
+###Start preprocessing the dataframe###
+#######################################
+#######################################
 
 #################################
 ###Column and row manipulation###
@@ -226,6 +226,19 @@ names(myCocktail)[names(myCocktail)=="attributes"] <- "cocktailName"
 ###Reindex###
 row.names(myCocktail)<- 1:nrow(myCocktail)
 
+###Change factor to character###
+for (i in 1:ncol(myCocktail)) {
+  myCocktail[,i] <- as.character(myCocktail[,i])
+}
+
+###Replace the dot in the names with a space###
+names(myCocktail) <- gsub(names(myCocktail), pattern = "\\.", replacement = " ")  
+
+#######################################################################################
+###Modifiying the cocktail informations needed for Shinyapp so it is shown correctly###
+#######################################################################################
+
+
 ###Split the ingredients based on certain regular expression###
 myCocktail <- cSplit(myCocktail, "IBA specifiedingredients", sep = "~~~", direction = "long")
 myCocktail <- cSplit(myCocktail, "Commonly used ingredients", sep = "~~~", direction = "long")
@@ -235,11 +248,13 @@ myCocktail <- myCocktail[order(myCocktail$cocktailName),]
 ###Some cocktails aren't shown correctly, those are investigated and corrected###
 #################################################################################
 
+
+
 ###Zombie was not shown correctly because the ingredients were in the drinkware column###
 myCocktail <- cSplit(myCocktail, "Standard drinkware", sep = "~~~", direction = "long")
-if(myCocktail$cocktailName=="Zombie"){
-  myCocktail$`Commonly used ingredients`<- myCocktail$`Standard drinkware`
-}
+
+myCocktail$`Commonly used ingredients`[myCocktail$cocktailName== "Zombie"] <- myCocktail$`Standard drinkware`[myCocktail$cocktailName== "Zombie"]
+
 
 ####!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###
 ###WARNING WARNING WARNING WARNING WARNING WARNING###
@@ -248,6 +263,8 @@ if(myCocktail$cocktailName=="Zombie"){
 ###It seems like there are some ingredients in the "Ingredients as listed at CocktailDB" column. ###
 ###Maybe this column needs to be added in the dataframe, but we will see###
 
+###Example###
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Red Russian",]
 ####!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###
 ###WARNING WARNING WARNING WARNING WARNING WARNING###
 ###!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###
@@ -286,7 +303,7 @@ myCocktail <- myCocktail[!myCocktail$cocktailName=="Salmiakki Koskenkorva",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Shirley Temple",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Sours",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Toronto",]
-
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Death in the Afternoon",]
 
 ###Cocktail without a type gets removed###
 myCocktail<-myCocktail[!is.na(myCocktail$Type),]

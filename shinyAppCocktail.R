@@ -4,8 +4,22 @@ library(data.table)
 library(shiny)
 library(shinydashboard, warn.conflicts = FALSE)
 library(readr)
+
+
+######################################
+###Load in and preprocess dataframe###
+######################################
+
 myCocktail <- read.csv("myCocktail.csv")
 myCocktail$X<-NULL
+
+###Replace the dot in the names with a space###
+names(myCocktail) <- gsub(names(myCocktail), pattern = "\\.", replacement = " ")  
+
+
+#######################
+###Building Shinyapp###
+#######################
 
 ###Shinyapp UI ###
 ui <- dashboardPage(
@@ -112,25 +126,22 @@ server <- function(input, output){
   ############################################
   ################All cocktails###############
   ############################################
-  #Creating output
-  #res <- res[myCocktail$cocktailName=="B and B",]
   
   output$cocktailTableAll <- renderDataTable({ 
     
     #Create the ingredients and the ratio 
-    #res<-myCocktail[c(3,4,5,6,9,7),]
     
     #Output will be based on which cocktail 
     #colNumber<- grep(input$cocktailAll, colnames(myCocktail))
     #res[,c(1,colNumber)]
-    res <- myCocktail[,c(8,9,10)]
+    res <- myCocktail[,c(10,6,9)]
     res <- res[myCocktail$cocktailName==input$cocktailAll,]
     
+    ###Only the first row needs to show the cocktail name, other rows don't need to###
     for (i in 2:nrow(res)) {
       res$cocktailName[i]<- NA
     }
     res <- res[,colSums(is.na(res))<nrow(res)]
-    res <- res
   })
   
   #description below the table
