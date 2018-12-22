@@ -229,7 +229,7 @@ row.names(myCocktail)<- 1:nrow(myCocktail)
 ###Split the ingredients based on certain regular expression###
 myCocktail <- cSplit(myCocktail, "IBA specifiedingredients", sep = "~~~", direction = "long")
 myCocktail <- cSplit(myCocktail, "Commonly used ingredients", sep = "~~~", direction = "long")
-myCocktail <- myCocktail999
+myCocktail <- myCocktail[order(myCocktail$cocktailName),]
 
 #################################################################################
 ###Some cocktails aren't shown correctly, those are investigated and corrected###
