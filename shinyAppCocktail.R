@@ -16,6 +16,8 @@ myCocktail$X<-NULL
 ###Replace the dot in the names with a space###
 names(myCocktail) <- gsub(names(myCocktail), pattern = "\\.", replacement = " ")  
 
+###Change column name###
+names(myCocktail)[which(names(myCocktail)=="cocktailName")]<- "cocktail name"
 
 #######################
 ###Building Shinyapp###
@@ -73,7 +75,7 @@ ui <- dashboardPage(
                      # Input for cocktail
                      selectInput(inputId = "cocktailAll", 
                                  label = "Which nice cocktail do you wanna make :D", 
-                                 choices = sort(unique(myCocktail$cocktailName)) 
+                                 choices = sort(unique(myCocktail$`cocktail name`)) 
                      )
                      
                    ),
@@ -130,16 +132,12 @@ server <- function(input, output){
   output$cocktailTableAll <- renderDataTable({ 
     
     #Create the ingredients and the ratio 
-    
-    #Output will be based on which cocktail 
-    #colNumber<- grep(input$cocktailAll, colnames(myCocktail))
-    #res[,c(1,colNumber)]
     res <- myCocktail[,c(10,6,9)]
-    res <- res[myCocktail$cocktailName==input$cocktailAll,]
+    res <- res[myCocktail$`cocktail name`==input$cocktailAll,]
     
     ###Only the first row needs to show the cocktail name, other rows don't need to###
     for (i in 2:nrow(res)) {
-      res$cocktailName[i]<- NA
+      res$`cocktail name`[i]<- NA
     }
     res <- res[,colSums(is.na(res))<nrow(res)]
   })
