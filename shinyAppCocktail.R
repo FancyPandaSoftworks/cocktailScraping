@@ -23,7 +23,7 @@ names(myCocktail)[which(names(myCocktail)=="cocktailName")]<- "cocktail name"
 ###Building Shinyapp###
 #######################
 
-###Shinyapp UI ###
+###Shinyapp UI###
 ui <- dashboardPage(
   dashboardHeader(title = "cocktail dashboard"),
   dashboardSidebar(
@@ -36,7 +36,7 @@ ui <- dashboardPage(
         )
         ),
       
-      #All my alcohol 
+      ###All my alcohol###
       div(class="test_type",
           menuItem("Whiskey"), 
           menuItem("Vodka"), 
@@ -56,23 +56,25 @@ ui <- dashboardPage(
           menuItem("Absinth"),
           menuItem("Lemon juice"),
           menuItem("Lime juice"),
-          menuItem("Bitters"),
           menuItem("Syrup"))
         )
     ),
   dashboardBody(
     fluidPage(
       tabsetPanel(
+        ##################################
+        ###All cocktails are shown here###  ###The order afterwards is from highest frequency to the 
+        ##################################                                      lowest frequency of the main alcohol### 
         
-        # App title ----
+        ###App title###
         tabPanel(title = "All cocktails here!!!", value = "allcocktail", fluid = TRUE,  titlePanel("cocktailsssssssssss :D"),
-                 # Sidebar layout with input and output definitions ----
+                 ###Sidebar layout with input and output definitions###
                  sidebarLayout(
                    
-                   # Sidebar panel for inputs ----
+                   ###Sidebar panel for inputs###
                    sidebarPanel(
                      
-                     # Input for cocktail
+                     ###Input for cocktail###
                      selectInput(inputId = "cocktailAll", 
                                  label = "Which nice cocktail do you wanna make :D", 
                                  choices = sort(unique(myCocktail$`cocktail name`)) 
@@ -80,10 +82,10 @@ ui <- dashboardPage(
                      
                    ),
                    
-                   # Main panel
+                   ###Main panel###
                    mainPanel(
                      
-                     # Output
+                     ###Output###
                      dataTableOutput('cocktailTableAll'),
                      htmlOutput('descriptionAll')
                      
@@ -91,28 +93,164 @@ ui <- dashboardPage(
                  )
         ),
         
-        #Whiskey cocktails
-        tabPanel(title = "Whiskey lovers", value = "whiskey", fluid = TRUE,  titlePanel("Whiskey lovers :D"),
-                 # Sidebar layout with input and output definitions ----
+        
+        ####################  
+        ###Gin cocktails####  
+        ####################
+
+        tabPanel(title = "Gin", value = "gin", fluid = TRUE,  titlePanel("Shaken, not stirred (please no)"),
+                 ###Sidebar layout with input and output definitions###
                  sidebarLayout(
                    
-                   # Sidebar panel for inputs ----
+                   ###Sidebar panel for inputs###
                    sidebarPanel(
                      
-                     #cocktail for Whiskey lovers :D
-                     selectInput(inputId = "cocktailWhiskey", 
-                                 label = "cocktails for Whiskey lovers >:D", 
-                                 choices = sort(myCocktail$cocktail[myCocktail$type=="whiskey"|myCocktail$type=="empty"])
+                     ###all gin cocktails###
+                     selectInput(inputId = "cocktailGin", 
+                                 label = "James Bond is that you?", 
+                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`=="gin"]))
                      )
                      
                    ),
                    
-                   # Main panel
+                   ###Main panel###
                    mainPanel(
                      
-                     # Output
+                     ###Output###
+                     dataTableOutput('cocktailTableGin'),
+                     htmlOutput('descriptionGin')
+                     
+                   )
+                 )
+        ),
+        
+        
+        
+        
+        
+        ####################  
+        ###Rum cocktails####  
+        ####################
+        
+        tabPanel(title = "Rum", value = "rum", fluid = TRUE,  titlePanel("Drink rum like pirates"),
+                 ###Sidebar layout with input and output definitions###
+                 sidebarLayout(
+                   
+                   ###Sidebar panel for inputs###
+                   sidebarPanel(
+                     
+                     ###all gin cocktails###
+                     selectInput(inputId = "cocktailRum", 
+                                 label = "ARRRRR, I am pirate or something, or a unicorn", 
+                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`=="rum"]))
+                     )
+                     
+                   ),
+                   
+                   ###Main panel###
+                   mainPanel(
+                     
+                     ###Output###
+                     dataTableOutput('cocktailTableRum'),
+                     htmlOutput('descriptionRum')
+                     
+                   )
+                 )
+        ),
+        
+        
+        
+        ######################
+        ###Vodka cocktails####  
+        ######################
+        
+        tabPanel(title = "Vodka", value = "vodka", fluid = TRUE,  titlePanel("With joy and vodka in 1969"),
+                 ###Sidebar layout with input and output definitions###
+                 sidebarLayout(
+                   
+                   ###Sidebar panel for inputs###
+                   sidebarPanel(
+                     
+                     ###all vodka cocktails###
+                     selectInput(inputId = "cocktailVodka", 
+                                 label = "Do you celebrate with vodka after the next landing?", 
+                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`=="vodka"]))
+                     )
+                     
+                   ),
+                   
+                   ###Main panel###
+                   mainPanel(
+                     
+                     ###Output###
+                     dataTableOutput('cocktailTableVodka'),
+                     htmlOutput('descriptionVodka')
+                     
+                   )
+                 )
+        ),
+        
+        
+        
+        
+        #######################
+        ###Whiskey cocktails### 
+        #######################
+        
+        tabPanel(title = "Whiskey", value = "rum", fluid = TRUE,  titlePanel("Love some whiskey girls"),
+                 ###Sidebar layout with input and output definitions###
+                 sidebarLayout(
+                   
+                   ###Sidebar panel for inputs###
+                   sidebarPanel(
+                     
+                     ###all gin cocktails###
+                     selectInput(inputId = "cocktailWhiskey", 
+                                 label = "Smoky, dry, or a bit sweet?", 
+                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`=="whiskey"]))
+                     )
+                     
+                   ),
+                   
+                   ###Main panel###
+                   mainPanel(
+                     
+                     ###Output###
                      dataTableOutput('cocktailTableWhiskey'),
                      htmlOutput('descriptionWhiskey')
+                     
+                   )
+                 )
+        ),
+        
+        
+        
+        
+        ####################  
+        ###Tequila cocktails####  
+        ####################
+        
+        tabPanel(title = "Tequila", value = "rum", fluid = TRUE,  titlePanel("Use your nose first for Tequila"),
+                 ###Sidebar layout with input and output definitions###
+                 sidebarLayout(
+                   
+                   ###Sidebar panel for inputs###
+                   sidebarPanel(
+                     
+                     ###all gin cocktails###
+                     selectInput(inputId = "cocktailTequila", 
+                                 label = "With or without the lemon, that's the question", 
+                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`=="tequila"]))
+                     )
+                     
+                   ),
+                   
+                   ###Main panel###
+                   mainPanel(
+                     
+                     ###Output###
+                     dataTableOutput('cocktailTableTequila'),
+                     htmlOutput('descriptionTequila')
                      
                    )
                  )
@@ -122,50 +260,254 @@ ui <- dashboardPage(
   )
 )
 
-#Shinyapp server
+
+
+
+
+####Shinyapp server###
 server <- function(input, output){
   
-  ############################################
-  ################All cocktails###############
-  ############################################
+  ###################
+  ###All cocktails###
+  ###################
   
   output$cocktailTableAll <- renderDataTable({ 
     
-    #Create the ingredients and the ratio 
+    ###Create the ingredients and the ratio dataframe###
     res <- myCocktail[,c(10,6,9)]
+    
+    ###Select the cocktail###
     res <- res[myCocktail$`cocktail name`==input$cocktailAll,]
+    
+    ###Either choose IBA or commonly used ingredient###
+    res <- res[,colSums(is.na(res))<nrow(res)]
+    res <- unique(res)
+    
+    ###Reindex###
+    row.names(res)<- 1:nrow(res)
     
     ###Only the first row needs to show the cocktail name, other rows don't need to###
     for (i in 2:nrow(res)) {
       res$`cocktail name`[i]<- NA
     }
-    res <- res[,colSums(is.na(res))<nrow(res)]
+    res <- res
   })
   
-  #description below the table
+  ###description below the table###
   output$descriptionAll <- renderText({
-    paste("<h4><br><br><br>",unique(myCocktail$Preparation[myCocktail$cocktail==input$cocktailAll]), "</h4>") 
+    paste("<h4><br><br><br>",unique(myCocktail$Preparation[myCocktail$`cocktail name`==input$cocktailAll]), "</h4>") 
   })
   
-  ############################################
-  ##################Whiskey###################
-  ############################################
-  #Creating output 
+  
+  
+  
+  
+  
+  #########
+  ###Gin###
+  #########
+  
+  ###Creating output###
+  output$cocktailTableGin <- renderDataTable({ 
+    
+    
+    ###Gin cocktail only###
+    res <- myCocktail[myCocktail$`Primary alcohol by volume`=="gin",]
+    
+    ###Create the ingredients and the ratio###
+    res <- res[, c(10,6,9)]
+    
+    ###Select the cocktail###
+    res <- res[res$`cocktail name`==input$cocktailGin,]
+    res <- res[rowSums(is.na(res)) != ncol(res), ]
+    ###Either choose IBA or commonly used ingredient###
+    res <- res[,colSums(is.na(res))<nrow(res)]
+    res <- unique(res)
+    
+    ###Reindex###
+    row.names(res)<- 1:nrow(res)
+    
+    ###Only the first row needs to show the cocktail name, other rows don't need to###
+    for (i in 2:nrow(res)) {
+      res$`cocktail name`[i]<- NA
+    }
+    res <- res
+    
+    
+  })
+  
+  ###description below the table###
+  output$descriptionGin <- renderText({
+    paste("<h4><br><br><br>",unique(myCocktail$Preparation[myCocktail$`cocktail name`==input$cocktailGin]), "</h4>") 
+  })
+  
+  
+  
+  
+  
+  #########
+  ###Rum###
+  #########
+  
+  ###Creating output###
+  output$cocktailTableRum <- renderDataTable({ 
+    
+    
+    ###Rum cocktail only###
+    res <- myCocktail[myCocktail$`Primary alcohol by volume`=="rum",]
+    
+    ###Create the ingredients and the ratio###
+    res <- res[, c(10,6,9)]
+    
+    ###Select the cocktail###
+    res <- res[res$`cocktail name`==input$cocktailRum,]
+    res <- res[rowSums(is.na(res)) != ncol(res), ]
+    ###Either choose IBA or commonly used ingredient###
+    res <- res[,colSums(is.na(res))<nrow(res)]
+    res <- unique(res)
+    
+    ###Reindex###
+    row.names(res)<- 1:nrow(res)
+    
+    ###Only the first row needs to show the cocktail name, other rows don't need to###
+    for (i in 2:nrow(res)) {
+      res$`cocktail name`[i]<- NA
+    }
+    res <- res
+    
+    
+  })
+  
+  ###description below the table###
+  output$descriptionRum <- renderText({
+    paste("<h4><br><br><br>",unique(myCocktail$Preparation[myCocktail$`cocktail name`==input$cocktailRum]), "</h4>") 
+  })
+  
+  
+  
+  
+  
+  
+  
+  
+  ###########
+  ###Vodka###
+  ###########
+  
+  ###Creating output###
+  output$cocktailTableVodka <- renderDataTable({ 
+    
+    
+    ###Vodka cocktail only###
+    res <- myCocktail[myCocktail$`Primary alcohol by volume`=="vodka",]
+    
+    ###Create the ingredients and the ratio###
+    res <- res[, c(10,6,9)]
+    
+    ###Select the cocktail###
+    res <- res[res$`cocktail name`==input$cocktailVodka,]
+    res <- res[rowSums(is.na(res)) != ncol(res), ]
+    ###Either choose IBA or commonly used ingredient###
+    res <- res[,colSums(is.na(res))<nrow(res)]
+    res <- unique(res)
+    
+    ###Reindex###
+    row.names(res)<- 1:nrow(res)
+    
+    ###Only the first row needs to show the cocktail name, other rows don't need to###
+    for (i in 2:nrow(res)) {
+      res$`cocktail name`[i]<- NA
+    }
+    res <- res
+    
+    
+  })
+  
+  ###description below the table###
+  output$descriptionVodka <- renderText({
+    paste("<h4><br><br><br>",unique(myCocktail$Preparation[myCocktail$`cocktail name`==input$cocktailVodka]), "</h4>") 
+  })
+  
+  
+  
+  
+  #############
+  ###Whiskey###
+  #############
+  
+  ###Creating output###
   output$cocktailTableWhiskey <- renderDataTable({ 
     
-    #Create the ingredients and the ratio 
-    res<-myCocktail[, c(2,3)]
     
-    #Output will be based on which cocktail 
-    res<- res[myCocktail$cocktail==input$cocktailWhiskey]
+    ###Whiskey cocktail only###
+    res <- myCocktail[myCocktail$`Primary alcohol by volume`=="whiskey",]
     
+    ###Create the ingredients and the ratio###
+    res <- res[, c(10,6,9)]
+    
+    ###Select the cocktail###
+    res <- res[res$`cocktail name`==input$cocktailWhiskey,]
+    res <- res[rowSums(is.na(res)) != ncol(res), ]
+    ###Either choose IBA or commonly used ingredient###
+    res <- res[,colSums(is.na(res))<nrow(res)]
+    res <- unique(res)
+    
+    ###Reindex###
+    row.names(res)<- 1:nrow(res)
+    
+    ###Only the first row needs to show the cocktail name, other rows don't need to###
+    for (i in 2:nrow(res)) {
+      res$`cocktail name`[i]<- NA
+    }
+    res <- res
     
     
   })
   
-  #description below the table
+  ###description below the table###
   output$descriptionWhiskey <- renderText({
-    paste("<h4>",unique(myCocktail$description[myCocktail$cocktail==input$cocktailWhiskey]), "</h4>") 
+    paste("<h4><br><br><br>",unique(myCocktail$Preparation[myCocktail$`cocktail name`==input$cocktailWhiskey]), "</h4>") 
+  })
+  
+  
+  
+  
+  #############
+  ###Tequila###
+  #############
+  
+  ###Creating output###
+  output$cocktailTableTequila <- renderDataTable({ 
+    
+    
+    ###Tequila cocktail only###
+    res <- myCocktail[myCocktail$`Primary alcohol by volume`=="tequila",]
+    
+    ###Create the ingredients and the ratio###
+    res <- res[, c(10,6,9)]
+    
+    ###Select the cocktail###
+    res <- res[res$`cocktail name`==input$cocktailTequila,]
+    res <- res[rowSums(is.na(res)) != ncol(res), ]
+    ###Either choose IBA or commonly used ingredient###
+    res <- res[,colSums(is.na(res))<nrow(res)]
+    res <- unique(res)
+    
+    ###Reindex###
+    row.names(res)<- 1:nrow(res)
+    
+    ###Only the first row needs to show the cocktail name, other rows don't need to###
+    for (i in 2:nrow(res)) {
+      res$`cocktail name`[i]<- NA
+    }
+    res <- res
+    
+    
+  })
+  
+  ###description below the table###
+  output$descriptionTequila <- renderText({
+    paste("<h4><br><br><br>",unique(myCocktail$Preparation[myCocktail$`cocktail name`==input$cocktailTequila]), "</h4>") 
   })
   
 }

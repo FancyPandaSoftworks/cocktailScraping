@@ -19,6 +19,11 @@ changeFactorToCharacter <- function(){
 }
 
 
+
+
+
+
+
 #################################
 ###Column and row manipulation###
 #################################
@@ -81,6 +86,12 @@ row.names(myCocktail)<- 1:nrow(myCocktail)
 ###Replace the dot in the names with a space###
 names(myCocktail) <- gsub(names(myCocktail), pattern = "\\.", replacement = " ")  
 
+
+
+
+
+
+
 #######################################################################################
 ###Modifiying the cocktail informations needed for Shinyapp so it is shown correctly###
 #######################################################################################
@@ -94,11 +105,15 @@ myCocktail <- cSplit(myCocktail, "Commonly used ingredients", sep = "~~~", direc
 myCocktail <- myCocktail[order(myCocktail$cocktailName),]
 
 
+
+
+
+
+
+
 #################################################################################
 ###Some cocktails aren't shown correctly, those are investigated and corrected###
 #################################################################################
-
-
 
 ###Zombie was not shown correctly because the ingredients were in the drinkware column###
 myCocktail <- cSplit(myCocktail, "Standard drinkware", sep = "~~~", direction = "long")
@@ -122,13 +137,17 @@ myCocktail <- myCocktail[!myCocktail$cocktailName=="Red Russian",]
 
 
 
+
+
+
+
 ########################
 ###Removing cocktails###
 ########################
 
 ###Strange format###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Tom and Jerry",]
-
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Buck",]
 ###Bobby burns has the ingredients in a different column, but I am not interested in this one anyway###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Bobby Burns",]
 
@@ -162,6 +181,38 @@ myCocktail <- myCocktail[!myCocktail$cocktailName=="Death in the Afternoon",]
 ###Cocktail without a type gets removed###
 myCocktail<-myCocktail[!is.na(myCocktail$Type),]
 View(myCocktail)
+
+
+
+
+
+
+
+###################################################################################################
+###Split the primary alcohol so you can sort it by alcohol, a bit easier to search for cocktails###
+###################################################################################################
+
+###Split the alcohol row into single parts###
+myCocktail <- cSplit(myCocktail, "Primary alcohol by volume", sep = "~~~", direction = "long")
+myCocktail <- as.data.frame(myCocktail)
+changeFactorToCharacter()
+
+###Change all alcohol into lower case###
+myCocktail$`Primary alcohol by volume` <- tolower(myCocktail$`Primary alcohol by volume`)
+
+###Change all whiskey into whisky###
+myCocktail$`Primary alcohol by volume` <- gsub(pattern = ".*whisky", replacement = "whiskey", myCocktail$`Primary alcohol by volume`)
+
+###Remove everything before whiskey so it is easier to sort###
+myCocktail$`Primary alcohol by volume` <- gsub(pattern = ".*whiskey", replacement = "whiskey", myCocktail$`Primary alcohol by volume`)
+
+
+
+
+
+####@@@@@@@@@@@@@@@@@@@###
+###End of preprocessing###
+###@@@@@@@@@@@@@@@@@@@@###
 
 ###Write###
 write.csv(myCocktail, "myCocktail.csv")
