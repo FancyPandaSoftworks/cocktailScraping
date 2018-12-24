@@ -19,6 +19,27 @@ names(myCocktail) <- gsub(names(myCocktail), pattern = "\\.", replacement = " ")
 ###Change column name###
 names(myCocktail)[which(names(myCocktail)=="cocktailName")]<- "cocktail name"
 
+
+
+###########################################################
+###Get frequency of all the alcohol, useful for ordering###
+###########################################################
+
+###Get frequency table###
+alcoholFreq <- as.data.frame(table(myCocktail$`Primary alcohol by volume`))
+
+###Order the alcohol by frequency, highest frequency on top###
+alcoholFreq <- alcoholFreq[order(-alcoholFreq$Freq),]
+
+###Change variable name so it is more understandable###
+names(alcoholFreq)[1] <- "alcohol"
+
+###Reindex###
+row.names(alcoholFreq) <- 1:nrow(alcoholFreq)
+
+###Get the top 15 alcohol, other alcohols are not needed due to low frequency###
+alcoholFreq <- alcoholFreq[1:15,]
+
 #######################
 ###Building Shinyapp###
 #######################
@@ -36,28 +57,12 @@ ui <- dashboardPage(
         )
         ),
       
-      ###All my alcohol###
-      div(class="test_type",
-          menuItem("Whiskey"), 
-          menuItem("Vodka"), 
-          menuItem("Gin"),
-          menuItem("White Rum"),
-          menuItem("Tequila"),
-          menuItem("Brandy"),
-          menuItem("Blue Curacao"),
-          menuItem("Triple Sec"),
-          menuItem("Cointreau"),
-          menuItem("Absolut Citron"),
-          menuItem("Vermouth"),
-          menuItem("Maraschino Liqueur"),
-          menuItem("Coffee Liqueur"),
-          menuItem("Mezcal"),
-          menuItem("cachaça"),
-          menuItem("Absinth"),
-          menuItem("Lemon juice"),
-          menuItem("Lime juice"),
-          menuItem("Syrup"))
-        )
+      ###Which alcohol do you have###
+      checkboxGroupInput(inputId = "yourAlcohol", 
+                         label = "Select the alcohol you have",
+                         choices = alcoholFreq$alcohol)
+        ),
+    sidebarMenuOutput("cocktailAlcohol")
     ),
   dashboardBody(
     fluidPage(
@@ -67,7 +72,8 @@ ui <- dashboardPage(
         ##################################                                      lowest frequency of the main alcohol### 
         
         ###App title###
-        tabPanel(title = "All cocktails here!!!", value = "allcocktail", fluid = TRUE,  titlePanel("cocktailsssssssssss :D"),
+        tabPanel(title = "All cocktails here", value = "allcocktail", fluid = TRUE,  titlePanel("In the land of beers, 
+                                                                                                the cocktail is king"),
                  ###Sidebar layout with input and output definitions###
                  sidebarLayout(
                    
@@ -76,7 +82,7 @@ ui <- dashboardPage(
                      
                      ###Input for cocktail###
                      selectInput(inputId = "cocktailAll", 
-                                 label = "Which nice cocktail do you wanna make :D", 
+                                 label = "Time to move on, crownless king", 
                                  choices = sort(unique(myCocktail$`cocktail name`)) 
                      )
                      
@@ -97,7 +103,7 @@ ui <- dashboardPage(
         ####################  
         ###Gin cocktails####  
         ####################
-
+        
         tabPanel(title = "Gin", value = "gin", fluid = TRUE,  titlePanel("Shaken, not stirred (please no)"),
                  ###Sidebar layout with input and output definitions###
                  sidebarLayout(
@@ -206,7 +212,7 @@ ui <- dashboardPage(
                      
                      ###all gin cocktails###
                      selectInput(inputId = "cocktailWhiskey", 
-                                 label = "Smoky, dry, or a bit sweet?", 
+                                 label = "Smoky, heavy, or a bit sweet?", 
                                  choices = sort(unique(myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`=="whiskey"]))
                      )
                      
@@ -256,10 +262,9 @@ ui <- dashboardPage(
                  )
         )
       )
-    )
+  )
   )
 )
-
 
 
 
@@ -267,12 +272,14 @@ ui <- dashboardPage(
 ####Shinyapp server###
 server <- function(input, output){
   
+  
+  
   ###################
   ###All cocktails###
   ###################
   
   output$cocktailTableAll <- renderDataTable({ 
-    
+
     ###Create the ingredients and the ratio dataframe###
     res <- myCocktail[,c(10,6,9)]
     
@@ -319,6 +326,8 @@ server <- function(input, output){
     
     ###Select the cocktail###
     res <- res[res$`cocktail name`==input$cocktailGin,]
+    
+    ###Remove na###
     res <- res[rowSums(is.na(res)) != ncol(res), ]
     ###Either choose IBA or commonly used ingredient###
     res <- res[,colSums(is.na(res))<nrow(res)]
