@@ -5,7 +5,7 @@ library(data.table)
 library(shiny)
 library(shinydashboard, warn.conflicts = FALSE)
 library(readr)
-
+library(sqldf)
 
 
 
@@ -301,17 +301,42 @@ server <- function(input, output){
   resultList <- c()
   output$cocktailInput <- renderUI({
     
+    ###If nothing is chosen in the sidebar, then we show all the cocktails###
     if(is.null(input$yourAlcohol)){
       choice <- sort(unique(myCocktail$`cocktail name`)) 
     }
+    
+    ###We store the chosen alcohol in a list and shows the cocktails that contain the alcohol###
     else{
       alcoholList <- append(alcoholList, input$yourAlcohol)
       
       for (i in 1:length(alcoholList)) {
         resultList <- unique(append(resultList, myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`==alcoholList[i]]))
       }
+      
+      ###Remove all the NA###
       resultList <- resultList[complete.cases(resultList)]
-      choice <- resultList
+      
+      ###Get the alcohol information that is in the alcohol list###
+      alcoholCount <- myCocktail[myCocktail$`cocktail name` %in% resultList,]
+      alcoholCount <- unique(alcoholCount[,c(2,10)])
+      
+      ###Reindex###
+      rownames(alcoholCount) <- 1:nrow(alcoholCount)
+      
+      ###1 if the alcohol is in the list, 0 if not###
+      alcoholCount$isClicked <- alcoholCount$`Primary alcohol by volume` %in% alcoholList
+      alcoholCount$isClicked <- as.integer(alcoholCount$isClicked)
+      colnames(alcoholCount)[2] <- "cocktailName"
+      
+      ###Get the total count of all the alcohol matched with the cocktail###
+      alcoholCount <- sqldf("select cocktailName, sum(isClicked) as count 
+                            from alcoholCount 
+                            group by cocktailName 
+                            order by count
+                            desc")
+      colnames(alcoholCount)[1] <- "cocktail name"
+      choice <- alcoholCount$`cocktail name`
     }
     
     selectInput(inputId = "cocktailInput",
