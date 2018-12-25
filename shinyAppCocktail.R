@@ -1,9 +1,31 @@
-
-
+###############
+###Libraries###
+###############
 library(data.table)
 library(shiny)
 library(shinydashboard, warn.conflicts = FALSE)
 library(readr)
+
+
+
+
+###############
+###Functions###
+###############
+
+###Change factors to character function###
+changeFactorToCharacter <- function(){
+  for (i in 1:ncol(myCocktail)) {
+    myCocktail[,i] <<- as.character(myCocktail[,i])
+  }
+  myCocktail$`Standard drinkware` <<- as.character(myCocktail$`Standard drinkware`)
+  myCocktail$`IBA specifiedingredients` <<- as.character(myCocktail$`IBA specifiedingredients`)
+  myCocktail$`Commonly used ingredients` <<- as.character(myCocktail$`Commonly used ingredients`)
+}
+
+
+
+
 
 
 ######################################
@@ -19,7 +41,8 @@ names(myCocktail) <- gsub(names(myCocktail), pattern = "\\.", replacement = " ")
 ###Change column name###
 names(myCocktail)[which(names(myCocktail)=="cocktailName")]<- "cocktail name"
 
-
+###Change type###
+changeFactorToCharacter()
 
 ###########################################################
 ###Get frequency of all the alcohol, useful for ordering###
@@ -81,10 +104,7 @@ ui <- dashboardPage(
                    sidebarPanel(
                      
                      ###Input for cocktail###
-                     selectInput(inputId = "cocktailAll", 
-                                 label = "Time to move on, crownless king", 
-                                 choices = sort(unique(myCocktail$`cocktail name`)) 
-                     )
+                     uiOutput("cocktailInput")
                      
                    ),
                    
@@ -277,15 +297,35 @@ server <- function(input, output){
   ###################
   ###All cocktails###
   ###################
+  alcoholList <- c()
+  resultList <- c()
+  output$cocktailInput <- renderUI({
+    
+    if(is.null(input$yourAlcohol)){
+      choice <- sort(unique(myCocktail$`cocktail name`)) 
+    }
+    else{
+      alcoholList <- append(alcoholList, input$yourAlcohol)
+      
+      for (i in 1:length(alcoholList)) {
+        resultList <- unique(append(resultList, myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`==alcoholList[i]]))
+      }
+      resultList <- resultList[complete.cases(resultList)]
+      choice <- resultList
+    }
+    
+    selectInput(inputId = "cocktailInput",
+                label = "Time to move on, crownless king",
+                choices = choice)
+  })
   
   output$cocktailTableAll <- renderDataTable({ 
-
+    
     ###Create the ingredients and the ratio dataframe###
     res <- myCocktail[,c(10,6,9)]
     
     ###Select the cocktail###
-    res <- res[myCocktail$`cocktail name`==input$cocktailAll,]
-    
+    res <- res[myCocktail$`cocktail name`==input$cocktailInput,]
     ###Either choose IBA or commonly used ingredient###
     res <- res[,colSums(is.na(res))<nrow(res)]
     res <- unique(res)
@@ -294,15 +334,18 @@ server <- function(input, output){
     row.names(res)<- 1:nrow(res)
     
     ###Only the first row needs to show the cocktail name, other rows don't need to###
-    for (i in 2:nrow(res)) {
-      res$`cocktail name`[i]<- NA
+    if(nrow(res)>1){
+      for (i in 2:nrow(res)) {
+        res$`cocktail name`[i]<- NA
+      }
     }
+    
     res <- res
   })
   
   ###description below the table###
   output$descriptionAll <- renderText({
-    paste("<h4><br><br><br>",unique(myCocktail$Preparation[myCocktail$`cocktail name`==input$cocktailAll]), "</h4>") 
+    paste("<h4><br><br><br>",unique(myCocktail$Preparation[myCocktail$`cocktail name`==input$cocktailInput]), "</h4>") 
   })
   
   

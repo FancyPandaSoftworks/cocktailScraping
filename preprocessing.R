@@ -131,6 +131,10 @@ myCocktail$`Commonly used ingredients`[myCocktail$cocktailName== "Zombie"] <- my
 
 ###Example###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Red Russian",]
+
+### all in one place###
+# <- myCocktail[!myCocktail$cocktailName=="Breakfast martini",]
+
 ####!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###
 ###WARNING WARNING WARNING WARNING WARNING WARNING###
 ###!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###
@@ -148,6 +152,7 @@ myCocktail <- myCocktail[!myCocktail$cocktailName=="Red Russian",]
 ###Strange format###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Tom and Jerry",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Buck",]
+
 ###Bobby burns has the ingredients in a different column, but I am not interested in this one anyway###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Bobby Burns",]
 
