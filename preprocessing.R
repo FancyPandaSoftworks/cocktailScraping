@@ -211,7 +211,10 @@ myCocktail$`Primary alcohol by volume` <- gsub(pattern = ".*whisky", replacement
 ###Remove everything before whiskey so it is easier to sort###
 myCocktail$`Primary alcohol by volume` <- gsub(pattern = ".*whiskey", replacement = "whiskey", myCocktail$`Primary alcohol by volume`)
 
-
+###Change ç to c###
+myCocktail$`Primary alcohol by volume` <- gsub("ç", "c", myCocktail$`Primary alcohol by volume`)
+myCocktail$`Commonly used ingredients` <- gsub("ç", "c", myCocktail$`Commonly used ingredients`)
+myCocktail$`IBA specifiedingredients` <- gsub("ç", "c", myCocktail$`IBA specifiedingredients`)
 
 
 
