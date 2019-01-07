@@ -3,7 +3,11 @@
                                                 ###preprocessing the dataframe###
                                                     ###########################
 
-
+library(dplyr)
+library(tm)        
+library(SnowballC)
+library(wordcloud)
+library(RColorBrewer)
 ###############
 ###Functions###
 ###############
@@ -168,7 +172,7 @@ myCocktail <- myCocktail[!myCocktail$cocktailName=="Baby Guinness",]
 
 ###Drink I would never make anyway###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="BLT",]
-
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Scotch and soda",]
 
 ###No proper description###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Black Velvet",]
@@ -182,6 +186,7 @@ myCocktail <- myCocktail[!myCocktail$cocktailName=="Shirley Temple",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Sours",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Toronto",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Death in the Afternoon",]
+
 
 ###Cocktail without a type gets removed###
 myCocktail<-myCocktail[!is.na(myCocktail$Type),]
@@ -217,6 +222,89 @@ myCocktail$`Commonly used ingredients` <- gsub("ç", "c", myCocktail$`Commonly u
 myCocktail$`IBA specifiedingredients` <- gsub("ç", "c", myCocktail$`IBA specifiedingredients`)
 
 
+############################################################################################################################
+###Advanced method of looking for alcohol: Instead of going for the primary, we go with every ingredient the cocktail has###
+############################################################################################################################
+
+###All ingredients in one list###
+myCocktail$ingredientList <- myCocktail$`IBA specifiedingredients`
+myCocktail <- mutate(myCocktail, ingredientList = coalesce(ingredientList, `Commonly used ingredients`))
+
+###Remove all numbers##
+myCocktail$ingredientList <- removeNumbers(myCocktail$ingredientList)
+
+###-----------------------------------###
+###Remove words that are not necessary###
+###-----------------------------------###
+
+###To lower###
+myCocktail$ingredientList <- tolower(myCocktail$ingredientList)
+
+###Remove stopwords###
+myCocktail$ingredientList <- removeWords(myCocktail$ingredientList, stopwords("english"))
+
+###Remove everything in between bracket###
+myCocktail$ingredientList <-gsub("\\([^\\)]*\\)", "", myCocktail$ingredientList, perl=TRUE)
+
+###Remove certain parts before the main ingredient###
+myCocktail$ingredientList <- gsub(pattern = ".*whisky", replacement = "whiskey", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = ".*whiskey", replacement = "whiskey", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = ".*vermouth", replacement = "vermouth", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = ".*brandy", replacement = "brandy", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = ".*rum", replacement = "rum", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = ".*bitter", replacement = "bitters", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = ".*bitters", replacement = "bitters", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "lillet.*", replacement = "lillet", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "coca-cola", replacement = "cola", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "bourbon", replacement = "whiskey", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "kahlÃ", replacement = "kahlua", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "\\–  vodka", replacement = "vodka", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "coke", replacement = "cola", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "dashes ", replacement = "", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = ".*syrup", replacement = "syrup", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "bitterss", replacement = "bitters", myCocktail$ingredientList)
+###Wordlist with words that need to be removed###
+wordList <- c("cl", "oz", "parts", "ml", "one", "part", "dash", "ounces", "ounce", "tsp", "½", "¾","us fluid", "teaspoon", "tsp"
+              ,"drops", "wedge", "hot", "tspn", "tbsp", "two", "chopped", "salt", "onion", "extract", "unsweetened", "shots", "carbonated"
+              , "water", "fresh", "shot", "slices", "slice", "fresh", "sprig", "sprigs", "teaspoons", "freshly", "squeezed"
+              , "lemonÂ", "squash", "spoon", "dâ€™anu", "cup")
+myCocktail$ingredientList <- removeWords(myCocktail$ingredientList, wordList)
+
+###Remove non characters###
+myCocktail$ingredientList <- gsub("[[:punct:]]","",myCocktail$ingredientList)
+
+
+###Remove leading white space###
+### returns string w/o leading or trailing whitespace
+trim <- function (x) gsub("^\\s+|\\s+$", "", x)
+
+myCocktail$ingredientList <- trimws(myCocktail$ingredientList, "l")
+myCocktail$ingredientList <- trim(myCocktail$ingredientList)
+
+View(table(myCocktail$ingredientList))
+######################################################################################
+###World cloud, creating one so we know which words are needed but are standing out###
+######################################################################################
+docs <- Corpus(VectorSource(myCocktail$ingredientList))
+
+###Replace characters to space
+toSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
+docs <- tm_map(docs, toSpace, "/")
+docs <- tm_map(docs, toSpace, "@")
+docs <- tm_map(docs, toSpace, "\\|")
+
+###Transform to document matrix###
+dtm <- TermDocumentMatrix(docs)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+tail(d, 10)
+
+###Create word cloud###
+set.seed(1234)
+wordcloud(words = d$word, freq = d$freq, min.freq = 1,
+          max.words=400, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
 
 ####@@@@@@@@@@@@@@@@@@@###
 ###End of preprocessing###

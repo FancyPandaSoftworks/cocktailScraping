@@ -32,7 +32,7 @@ changeFactorToCharacter <- function(){
 ###Load in and preprocess dataframe###
 ######################################
 
-myCocktail <- read.csv("myCocktail.csv")
+myCocktail <- read.csv("myCocktail.csv", strip.white = TRUE)
 myCocktail$X<-NULL
 
 ###Replace the dot in the names with a space###
@@ -49,19 +49,23 @@ changeFactorToCharacter()
 ###########################################################
 
 ###Get frequency table###
-alcoholFreq <- as.data.frame(table(myCocktail$`Primary alcohol by volume`))
+alcoholFreq <- as.data.frame(table(myCocktail$ingredientList))
 
 ###Order the alcohol by frequency, highest frequency on top###
 alcoholFreq <- alcoholFreq[order(-alcoholFreq$Freq),]
 
 ###Change variable name so it is more understandable###
 names(alcoholFreq)[1] <- "alcohol"
+alcoholFreq$alcohol <- as.character(alcoholFreq$alcohol)
+
+###Remove "" from the list###
+alcoholFreq <- alcoholFreq[!alcoholFreq$alcohol=="",]
 
 ###Reindex###
 row.names(alcoholFreq) <- 1:nrow(alcoholFreq)
 
 ###Get the top 15 alcohol, other alcohols are not needed due to low frequency###
-alcoholFreq <- alcoholFreq[1:15,]
+alcoholFreq <- alcoholFreq[1:25,]
 
 #######################
 ###Building Shinyapp###
@@ -134,7 +138,7 @@ ui <- dashboardPage(
                      ###all gin cocktails###
                      selectInput(inputId = "cocktailGin", 
                                  label = "James Bond is that you?", 
-                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`=="gin"]))
+                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$ingredientList=="gin"]))
                      )
                      
                    ),
@@ -167,8 +171,8 @@ ui <- dashboardPage(
                      
                      ###all gin cocktails###
                      selectInput(inputId = "cocktailRum", 
-                                 label = "ARRRRR, I am pirate or something, or a unicorn", 
-                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`=="rum"]))
+                                 label = "So pirate, so unicorn", 
+                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$ingredientList=="rum"]))
                      )
                      
                    ),
@@ -200,7 +204,7 @@ ui <- dashboardPage(
                      ###all vodka cocktails###
                      selectInput(inputId = "cocktailVodka", 
                                  label = "Do you celebrate with vodka after the next landing?", 
-                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`=="vodka"]))
+                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$ingredientList=="vodka"]))
                      )
                      
                    ),
@@ -233,7 +237,7 @@ ui <- dashboardPage(
                      ###all gin cocktails###
                      selectInput(inputId = "cocktailWhiskey", 
                                  label = "Smoky, heavy, or a bit sweet?", 
-                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`=="whiskey"]))
+                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$ingredientList=="whiskey"]))
                      )
                      
                    ),
@@ -256,7 +260,7 @@ ui <- dashboardPage(
         ###Tequila cocktails####  
         ####################
         
-        tabPanel(title = "Tequila", value = "rum", fluid = TRUE,  titlePanel("Use your nose first for Tequila"),
+        tabPanel(title = "Tequila", value = "rum", fluid = TRUE,  titlePanel("Pablo Tequilabar"),
                  ###Sidebar layout with input and output definitions###
                  sidebarLayout(
                    
@@ -265,8 +269,8 @@ ui <- dashboardPage(
                      
                      ###all gin cocktails###
                      selectInput(inputId = "cocktailTequila", 
-                                 label = "With or without the lemon, that's the question", 
-                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`=="tequila"]))
+                                 label = "You high on tequila?", 
+                                 choices = sort(unique(myCocktail$`cocktail name`[myCocktail$ingredientList=="tequila"]))
                      )
                      
                    ),
@@ -311,7 +315,7 @@ server <- function(input, output){
       alcoholList <- append(alcoholList, input$yourAlcohol)
       
       for (i in 1:length(alcoholList)) {
-        resultList <- unique(append(resultList, myCocktail$`cocktail name`[myCocktail$`Primary alcohol by volume`==alcoholList[i]]))
+        resultList <- unique(append(resultList, myCocktail$`cocktail name`[myCocktail$ingredientList==alcoholList[i]]))
       }
       
       ###Remove all the NA###
@@ -387,8 +391,8 @@ server <- function(input, output){
     
     
     ###Gin cocktail only###
-    res <- myCocktail[myCocktail$`Primary alcohol by volume`=="gin",]
-    
+    name <- myCocktail$`cocktail name`[myCocktail$ingredientList=="gin"]
+    res <- myCocktail[myCocktail$`cocktail name` %in% name,]
     ###Create the ingredients and the ratio###
     res <- res[, c(10,6,9)]
     
@@ -431,8 +435,8 @@ server <- function(input, output){
     
     
     ###Rum cocktail only###
-    res <- myCocktail[myCocktail$`Primary alcohol by volume`=="rum",]
-    
+    name <- myCocktail$`cocktail name`[myCocktail$ingredientList=="rum"]
+    res <- myCocktail[myCocktail$`cocktail name` %in% name,]
     ###Create the ingredients and the ratio###
     res <- res[, c(10,6,9)]
     
@@ -476,7 +480,8 @@ server <- function(input, output){
     
     
     ###Vodka cocktail only###
-    res <- myCocktail[myCocktail$`Primary alcohol by volume`=="vodka",]
+    name <- myCocktail$`cocktail name`[myCocktail$ingredientList=="vodka"]
+    res <- myCocktail[myCocktail$`cocktail name` %in% name,]
     
     ###Create the ingredients and the ratio###
     res <- res[, c(10,6,9)]
@@ -517,7 +522,8 @@ server <- function(input, output){
     
     
     ###Whiskey cocktail only###
-    res <- myCocktail[myCocktail$`Primary alcohol by volume`=="whiskey",]
+    name <- myCocktail$`cocktail name`[myCocktail$ingredientList=="whiskey"]
+    res <- myCocktail[myCocktail$`cocktail name` %in% name,]
     
     ###Create the ingredients and the ratio###
     res <- res[, c(10,6,9)]
@@ -558,7 +564,8 @@ server <- function(input, output){
     
     
     ###Tequila cocktail only###
-    res <- myCocktail[myCocktail$`Primary alcohol by volume`=="tequila",]
+    name <- myCocktail$`cocktail name`[myCocktail$ingredientList=="tequila"]
+    res <- myCocktail[myCocktail$`cocktail name` %in% name,]
     
     ###Create the ingredients and the ratio###
     res <- res[, c(10,6,9)]
