@@ -1,4 +1,4 @@
-rm(list=ls())
+#rm(list=ls())
 ################################################
 ###Create a crawler to scrape all cocktail data from wiki###
 ################################################
@@ -38,9 +38,9 @@ cocktailList <- data.table("attributes" = c("Type",
 
 
 ###Retrieve all the cocktails in the list, after analyzing the wiki cocktail page we set a certain range in which we want to crawl###
-for (i in 8:34) {
+for (i in c(8:33, 35:36,38:43)) {
   
-  
+  print(i)
   ###########################################################################################################################
   ###First part is getting the list where the cocktails belong(Gin, Vodka etc). Then we crawl the cocktails from that list###
   ###########################################################################################################################

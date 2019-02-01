@@ -58,15 +58,78 @@ alcoholFreq <- alcoholFreq[order(-alcoholFreq$Freq),]
 names(alcoholFreq)[1] <- "alcohol"
 alcoholFreq$alcohol <- as.character(alcoholFreq$alcohol)
 
+###@@@@@@@###
+###Removal###
+###@@@@@@@###
+
 ###Remove "" from the list###
 alcoholFreq <- alcoholFreq[!alcoholFreq$alcohol=="",]
 
 ###Reindex###
 row.names(alcoholFreq) <- 1:nrow(alcoholFreq)
 
-###Get the top 15 alcohol, other alcohols are not needed due to low frequency###
-alcoholFreq <- alcoholFreq[1:25,]
+###Get the top ingredients###
 
+
+###@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###
+###Store the ingredients in separate lists###
+###@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###
+
+###All alcohol###
+listAlcohol <- c("gin", 
+                    "rum", 
+                    "vodka", 
+                    "tequila", 
+                    "whiskey", 
+                    "vermouth", 
+                    "brandy",
+                    "triple sec",
+                    "cognac",
+                    "campari", 
+                    "amaretto",
+                    "grand marnier",
+                    "cointreau",
+                    "blue curacao",
+                    "baileys irish cream",
+                    "cachaca",
+                    "kahlua",
+                    "lillet",
+                    "absinthe",
+                    "yellow chartreuse",
+                    "coffee liqueur",
+                    "orange curacao",
+                    "peach schnapps",
+                    "maraschino liqueur",
+                    "sake",
+                    "champagne")
+
+###Sort by name###
+listAlcohol <- sort(listAlcohol)
+
+
+###All juice###
+listJuice <- c("lemon juice", 
+               "lime juice", 
+               "orange juice", 
+               "pineapple juice", 
+               "cranberry juice", 
+               "cola", 
+               "grapefruit juice",
+               "lemonade",
+               "sour mix",
+               "guava juice",
+               "passion fruit juice")
+
+###Sort by name###
+listJuice <- sort(listJuice)
+
+###Others###
+listOthers <- c("syrup", 
+                "bitters", 
+                "egg white", 
+                "soda",
+                "mint")
+listOthers <- sort(listOthers)
 #######################
 ###Building Shinyapp###
 #######################
@@ -85,10 +148,32 @@ ui <- dashboardPage(
         ),
       
       ###Which alcohol do you have###
-      checkboxGroupInput(inputId = "yourAlcohol", 
-                         label = "Select the alcohol you have",
-                         choices = alcoholFreq$alcohol)
+      # checkboxGroupInput(inputId = "yourAlcohol", 
+      #                    label = "Select the ingredients you have",
+      #                    choices = alcoholFreq$alcohol)
+      
+      ###Under construction###
+      
+      ###Alcohol selection###
+      selectizeInput(inputId = 'yourAlcohol', 
+                     label = "Alcohol", 
+                     choices = listAlcohol,
+                     multiple = TRUE),
+      
+      ###Juice selection###
+      selectizeInput(inputId = 'yourJuice', 
+                     label = "Juice", 
+                     choices = listJuice,
+                     multiple = TRUE),
+      
+      ###Other selections###
+      selectizeInput(inputId = "yourOthers",
+                     label = "Others,like syrup and bitters",
+                     choices = listOthers,
+                     multiple = TRUE
+      )
         ),
+    
     sidebarMenuOutput("cocktailAlcohol")
     ),
   dashboardBody(
@@ -236,7 +321,7 @@ ui <- dashboardPage(
                      
                      ###all gin cocktails###
                      selectInput(inputId = "cocktailWhiskey", 
-                                 label = "Smoky, heavy, or a bit sweet?", 
+                                 label = "Mysterious, full of character or a bit sweet?", 
                                  choices = sort(unique(myCocktail$`cocktail name`[myCocktail$ingredientList=="whiskey"]))
                      )
                      
@@ -269,7 +354,7 @@ ui <- dashboardPage(
                      
                      ###all gin cocktails###
                      selectInput(inputId = "cocktailTequila", 
-                                 label = "You high on tequila?", 
+                                 label = "Pablo trades Tequila, not drugs", 
                                  choices = sort(unique(myCocktail$`cocktail name`[myCocktail$ingredientList=="tequila"]))
                      )
                      
@@ -291,9 +376,12 @@ ui <- dashboardPage(
 )
 
 
+                                              
+                                              #####################
+                                              ###Shinyapp server###
+                                              #####################
 
 
-####Shinyapp server###
 server <- function(input, output){
   
   
@@ -301,46 +389,75 @@ server <- function(input, output){
   ###################
   ###All cocktails###
   ###################
+  
   alcoholList <- c()
   resultList <- c()
   output$cocktailInput <- renderUI({
     
+    ###Get the input###
+    yourAlcohol <- input$yourAlcohol
+    yourJuice <- input$yourJuice
+    yourOthers <- input$yourOthers
+    
+    ###Combine the inputs
+    combineList <- c(yourAlcohol, yourJuice, yourOthers)
     ###If nothing is chosen in the sidebar, then we show all the cocktails###
-    if(is.null(input$yourAlcohol)){
+    if(is.null(combineList)){
       choice <- sort(unique(myCocktail$`cocktail name`)) 
     }
     
-    ###We store the chosen alcohol in a list and shows the cocktails that contain the alcohol###
+    ###We store the chosen ingredients in a list and shows the cocktails that contain the ingredients###
     else{
-      alcoholList <- append(alcoholList, input$yourAlcohol)
+      alcoholList <- append(alcoholList, combineList)
+
       
+      ###Store all the cocktails that has the ingredient in the list
       for (i in 1:length(alcoholList)) {
         resultList <- unique(append(resultList, myCocktail$`cocktail name`[myCocktail$ingredientList==alcoholList[i]]))
       }
-      
+
       ###Remove all the NA###
       resultList <- resultList[complete.cases(resultList)]
       
       ###Get the alcohol information that is in the alcohol list###
-      alcoholCount <- myCocktail[myCocktail$`cocktail name` %in% resultList,]
-      alcoholCount <- unique(alcoholCount[,c(2,10)])
+      getCocktail <- myCocktail[myCocktail$`cocktail name` %in% resultList,]
       
+      ###Get the ingredients and the name of the cocktail###
+      getCocktail <- unique(getCocktail[,c(11,10)])
+      #print(getCocktail)
       ###Reindex###
-      rownames(alcoholCount) <- 1:nrow(alcoholCount)
+      rownames(getCocktail) <- 1:nrow(getCocktail)
       
-      ###1 if the alcohol is in the list, 0 if not###
-      alcoholCount$isClicked <- alcoholCount$`Primary alcohol by volume` %in% alcoholList
-      alcoholCount$isClicked <- as.integer(alcoholCount$isClicked)
-      colnames(alcoholCount)[2] <- "cocktailName"
+
+      ###Which ingredients are clicked###
+      getCocktail$isClicked <- getCocktail$ingredientList %in% alcoholList
+      getCocktail$isClicked <- as.integer(getCocktail$isClicked)
+      colnames(getCocktail)[2] <- "cocktailName"
+      #print(getCocktail)
+      
+      ###Cocktails that can't be made due to lack of ingredients
+      lackIngredient <- getCocktail[getCocktail$isClicked==0,]
+      #print(lackIngredient)
+      
+      ###Get all the cocktails you are able to make, if there is at least one cocktail available###
+      if(nrow(getCocktail[!getCocktail$cocktailName %in% lackIngredient$cocktailName,])!=0){
+        getCocktail <- getCocktail[!getCocktail$cocktailName %in% lackIngredient$cocktailName,]
+      }
       
       ###Get the total count of all the alcohol matched with the cocktail###
-      alcoholCount <- sqldf("select cocktailName, sum(isClicked) as count 
-                            from alcoholCount 
-                            group by cocktailName 
-                            order by count
-                            desc")
-      colnames(alcoholCount)[1] <- "cocktail name"
-      choice <- alcoholCount$`cocktail name`
+      getCocktail <- sqldf("select cocktailName, sum(isClicked) as count
+                            from getCocktail
+                            group by cocktailName")
+      
+      ###Order these by names###
+      getCocktail <- getCocktail[order(getCocktail$cocktailName),]
+      
+      ###Rename column###
+      colnames(getCocktail)[1] <- "cocktail name"
+      #print(getCocktail)
+      
+      
+      choice <- getCocktail$`cocktail name`
     }
     
     selectInput(inputId = "cocktailInput",

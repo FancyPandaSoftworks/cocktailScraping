@@ -263,6 +263,17 @@ myCocktail$ingredientList <- gsub(pattern = "coke", replacement = "cola", myCock
 myCocktail$ingredientList <- gsub(pattern = "dashes ", replacement = "", myCocktail$ingredientList)
 myCocktail$ingredientList <- gsub(pattern = ".*syrup", replacement = "syrup", myCocktail$ingredientList)
 myCocktail$ingredientList <- gsub(pattern = "bitterss", replacement = "bitters", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "kahlúa", replacement = "kahlua", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = ".*orange juice", replacement = "orange juice", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = ".*gin", replacement = "gin", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "gin.*", replacement = "gin", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "jack daniels", replacement = "whiskey", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "mint.*", replacement = "mint", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "ice.*", replacement = "ice", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "apple schnapps.*", replacement = "apple schnapps", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "amaretto.*", replacement = "amaretto", myCocktail$ingredientList)
+myCocktail$ingredientList <- gsub(pattern = "ice", replacement = "ice.*", myCocktail$ingredientList)
+
 ###Wordlist with words that need to be removed###
 wordList <- c("cl", "oz", "parts", "ml", "one", "part", "dash", "ounces", "ounce", "tsp", "½", "¾","us fluid", "teaspoon", "tsp"
               ,"drops", "wedge", "hot", "tspn", "tbsp", "two", "chopped", "salt", "onion", "extract", "unsweetened", "shots", "carbonated"
