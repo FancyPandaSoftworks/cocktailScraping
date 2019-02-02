@@ -5,9 +5,9 @@ account: oscarhsieh
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 557718
-bundleId: 1850456
+bundleId: 1851472
 url: https://oscarhsieh.shinyapps.io/cocktail/
-when: 1549035322.76812
+when: 1549073302.97594
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .gitattributes|.RData|myCocktail2.csv|preprocessing.R|scraper.R
+ignoredFiles: .gitattributes|.RData|preprocessing.R|scraper.R

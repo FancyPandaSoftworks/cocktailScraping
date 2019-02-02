@@ -68,8 +68,6 @@ alcoholFreq <- alcoholFreq[!alcoholFreq$alcohol=="",]
 ###Reindex###
 row.names(alcoholFreq) <- 1:nrow(alcoholFreq)
 
-###Get the top ingredients###
-
 
 ###@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###
 ###Store the ingredients in separate lists###
@@ -128,7 +126,8 @@ listOthers <- c("syrup",
                 "bitters", 
                 "egg white", 
                 "soda",
-                "mint")
+                "mint",
+                "sugar")
 listOthers <- sort(listOthers)
 #######################
 ###Building Shinyapp###
