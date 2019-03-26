@@ -90,7 +90,6 @@ listAlcohol <- c("gin",
                     "blue curacao",
                     "baileys irish cream",
                     "cachaca",
-                    "kahlua",
                     "lillet",
                     "absinthe",
                     "yellow chartreuse",
@@ -408,13 +407,14 @@ server <- function(input, output){
     ###We store the chosen ingredients in a list and shows the cocktails that contain the ingredients###
     else{
       alcoholList <- append(alcoholList, combineList)
-
       
-      ###Store all the cocktails that has the ingredient in the list
+      
+      ###Store all the cocktails that has the ingredient in the list, even if it is only one ingredient, the cocktail will be added.
       for (i in 1:length(alcoholList)) {
         resultList <- unique(append(resultList, myCocktail$`cocktail name`[myCocktail$ingredientList==alcoholList[i]]))
       }
-
+      # print(resultList)
+      # print("------------")
       ###Remove all the NA###
       resultList <- resultList[complete.cases(resultList)]
       
@@ -447,7 +447,7 @@ server <- function(input, output){
       getCocktail <- sqldf("select cocktailName, sum(isClicked) as count
                             from getCocktail
                             group by cocktailName")
-      
+
       ###Order these by names###
       getCocktail <- getCocktail[order(getCocktail$cocktailName),]
       
@@ -514,7 +514,7 @@ server <- function(input, output){
     
     ###Select the cocktail###
     res <- res[res$`cocktail name`==input$cocktailGin,]
-    
+    print(res)
     ###Remove na###
     res <- res[rowSums(is.na(res)) != ncol(res), ]
     ###Either choose IBA or commonly used ingredient###
@@ -558,6 +558,8 @@ server <- function(input, output){
     
     ###Select the cocktail###
     res <- res[res$`cocktail name`==input$cocktailRum,]
+    print(res)
+    ###Remove na###
     res <- res[rowSums(is.na(res)) != ncol(res), ]
     ###Either choose IBA or commonly used ingredient###
     res <- res[,colSums(is.na(res))<nrow(res)]
@@ -571,7 +573,6 @@ server <- function(input, output){
       res$`cocktail name`[i]<- NA
     }
     res <- res
-    
     
   })
   
@@ -692,7 +693,7 @@ server <- function(input, output){
     ###Either choose IBA or commonly used ingredient###
     res <- res[,colSums(is.na(res))<nrow(res)]
     res <- unique(res)
-    
+    print(res)
     ###Reindex###
     row.names(res)<- 1:nrow(res)
     

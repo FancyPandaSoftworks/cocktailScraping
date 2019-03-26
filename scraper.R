@@ -10,7 +10,6 @@ library(rvest)
 library(magrittr)
 library(sqldf)
 library(XML)
-library(dplyr)
 library(purrr)
 library(tidyr)
 library(dplyr)
@@ -38,7 +37,7 @@ cocktailList <- data.table("attributes" = c("Type",
 
 
 ###Retrieve all the cocktails in the list, after analyzing the wiki cocktail page we set a certain range in which we want to crawl###
-for (i in c(8:33, 35:36,38:43)) {
+for (i in c(8:13, 15:33, 35:36,38:43)) {
   
   print(i)
   ###########################################################################################################################
@@ -55,6 +54,8 @@ for (i in c(8:33, 35:36,38:43)) {
   ###Start scraping###
   else{
     mainCocktail <- html_nodes(baseUrl, xpath = xpath)
+    
+    ###Get the list of the cocktails in the group###
     mainCocktail <- html_nodes(mainCocktail ,xpath = 'li/a/@href[1]')
     
     ###Extract the links out of the xml nodes###
@@ -79,7 +80,7 @@ for (i in c(8:33, 35:36,38:43)) {
       
     }
     
-    ###After this is finished, we obtain the main type with all the cocktail links included###
+    ###After this is finished, we have all the links of the cocktails that belong to the alcohol group###
     
     ######################################################
     ###Here we start crawling the cocktails of the list###
@@ -165,3 +166,4 @@ for (i in c(8:33, 35:36,38:43)) {
 ###@@@@@@@@@@@@@@@###
 ###End of crawling###
 ###@@@@@@@@@@@@@@@###
+write.csv(cocktailList,"cocktailList.csv")

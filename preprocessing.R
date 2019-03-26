@@ -8,10 +8,20 @@ library(tm)
 library(SnowballC)
 library(wordcloud)
 library(RColorBrewer)
+library(data.table)
+library(rvest)
+library(magrittr)
+library(sqldf)
+library(XML)
+library(purrr)
+library(tidyr)
+library(data.table)
+library(splitstackshape)
+library(tidyverse) 
+library(sqldf)
 ###############
 ###Functions###
 ###############
-                                                                                 
 ###Change factors to character function###
 changeFactorToCharacter <- function(){
   for (i in 1:ncol(myCocktail)) {
@@ -25,14 +35,15 @@ changeFactorToCharacter <- function(){
 
 
 
-
+###Load csv###
+myCocktail <- fread(cocktailList)
 
 
 #################################
 ###Column and row manipulation###
 #################################
 ###Some ingredients are in another row, we put that in the commonly used ingredients###
-myCocktail<- as.data.frame(cocktailList)
+#myCocktail<- as.data.frame(cocktailList)
 for (i in 2:ncol(myCocktail)) {
   if(!is.na(myCocktail[75,i])&&is.na(myCocktail[52,i])){
     myCocktail[52,i]<- myCocktail[75,i]
@@ -157,6 +168,7 @@ myCocktail <- myCocktail[!myCocktail$cocktailName=="Red Russian",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Tom and Jerry",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Buck",]
 
+
 ###Bobby burns has the ingredients in a different column, but I am not interested in this one anyway###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Bobby Burns",]
 
@@ -186,10 +198,16 @@ myCocktail <- myCocktail[!myCocktail$cocktailName=="Shirley Temple",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Sours",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Toronto",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Death in the Afternoon",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Chimay Cocktail",]
 
+###No name###
+myCocktail <- myCocktail[!myCocktail$cocktailName=="",]
 
 ###Cocktail without a type gets removed###
 myCocktail<-myCocktail[!is.na(myCocktail$Type),]
+
+
+
 View(myCocktail)
 
 
@@ -279,7 +297,9 @@ myCocktail$ingredientList <- gsub(pattern = ".*sugar", replacement = "sugar", my
 myCocktail$ingredientList <- gsub(pattern = "barspoon ", replacement = "", myCocktail$ingredientList)
 myCocktail$ingredientList <- gsub(pattern = "sweetened lime juice", replacement = "lime juice", myCocktail$ingredientList)
 myCocktail$ingredientList <- gsub(pattern = "jack daniels", replacement = "whiskey", myCocktail$ingredientList)
- 
+myCocktail$ingredientList <- gsub(pattern = "kahlua", replacement = "coffee liqueur", myCocktail$ingredientList)
+myCocktail$cocktailName <- gsub(pattern = "Chimayó", replacement = "Chimayo", myCocktail$cocktailName)
+
 ###Wordlist with words that need to be removed###
 wordList <- c("cl", "oz", "parts", "ml", "one", "part", "dash", "ounces", "ounce", "tsp", "½", "¾","us fluid", "teaspoon", "tsp"
               ,"drops", "wedge", "hot", "tspn", "tbsp", "two", "chopped", "salt", "onion", "extract", "unsweetened", "shots", "carbonated"
