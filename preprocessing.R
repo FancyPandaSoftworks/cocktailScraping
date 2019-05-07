@@ -199,6 +199,8 @@ myCocktail <- myCocktail[!myCocktail$cocktailName=="Sours",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Toronto",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Death in the Afternoon",]
 myCocktail <- myCocktail[!myCocktail$cocktailName=="Chimay Cocktail",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Jägerbomb",]
+myCocktail <- myCocktail[!myCocktail$cocktailName=="Polar Bear",]
 
 ###No name###
 myCocktail <- myCocktail[!myCocktail$cocktailName=="",]
@@ -239,6 +241,13 @@ myCocktail$`Primary alcohol by volume` <- gsub("ç", "c", myCocktail$`Primary al
 myCocktail$`Commonly used ingredients` <- gsub("ç", "c", myCocktail$`Commonly used ingredients`)
 myCocktail$`IBA specifiedingredients` <- gsub("ç", "c", myCocktail$`IBA specifiedingredients`)
 
+###Change ñ to n###
+myCocktail$`Primary alcohol by volume` <- gsub("ñ", "n", myCocktail$`Primary alcohol by volume`)
+myCocktail$`Commonly used ingredients` <- gsub("ñ", "n", myCocktail$`Commonly used ingredients`)
+myCocktail$`IBA specifiedingredients` <- gsub("ñ", "n", myCocktail$`IBA specifiedingredients`)
+
+###Change ½ to 0.5###
+myCocktail$`Commonly used ingredients` <- gsub("½", "0.5", myCocktail$`Commonly used ingredients`)
 
 ############################################################################################################################
 ###Advanced method of looking for alcohol: Instead of going for the primary, we go with every ingredient the cocktail has###
