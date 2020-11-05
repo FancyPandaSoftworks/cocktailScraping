@@ -120,7 +120,6 @@ listJuice <- c("lemon juice",
 ###Sort by name###
 listJuice <- sort(listJuice)
 
-###Others###
 listOthers <- c("syrup", 
                 "bitters", 
                 "egg white", 
@@ -128,6 +127,7 @@ listOthers <- c("syrup",
                 "mint",
                 "sugar")
 listOthers <- sort(listOthers)
+
 #######################
 ###Building Shinyapp###
 #######################
@@ -195,7 +195,6 @@ ui <- dashboardPage(
                      
                    ),
                    
-                   ###Main panel###
                    mainPanel(
                      
                      ###Output###
@@ -325,7 +324,6 @@ ui <- dashboardPage(
                      
                    ),
                    
-                   ###Main panel###
                    mainPanel(
                      
                      ###Output###
@@ -358,7 +356,6 @@ ui <- dashboardPage(
                      
                    ),
                    
-                   ###Main panel###
                    mainPanel(
                      
                      ###Output###
@@ -439,9 +436,9 @@ server <- function(input, output){
       #print(lackIngredient)
       
       ###Get all the cocktails you are able to make, if there is at least one cocktail available###
-      if(nrow(getCocktail[!getCocktail$cocktailName %in% lackIngredient$cocktailName,])!=0){
-        getCocktail <- getCocktail[!getCocktail$cocktailName %in% lackIngredient$cocktailName,]
-      }
+      #if(nrow(getCocktail[!getCocktail$cocktailName %in% lackIngredient$cocktailName,])!=0){
+        #getCocktail <- getCocktail[!getCocktail$cocktailName %in% lackIngredient$cocktailName,]
+      #}
       
       ###Get the total count of all the alcohol matched with the cocktail###
       getCocktail <- sqldf("select cocktailName, sum(isClicked) as count
