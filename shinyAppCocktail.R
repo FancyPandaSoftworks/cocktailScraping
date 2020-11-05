@@ -435,10 +435,12 @@ server <- function(input, output){
       lackIngredient <- getCocktail[getCocktail$isClicked==0,]
       #print(lackIngredient)
       
+      
+      ###!!!!!!!!!!!!!!!!!!!!!!!!!###
       ###Get all the cocktails you are able to make, if there is at least one cocktail available###
-      #if(nrow(getCocktail[!getCocktail$cocktailName %in% lackIngredient$cocktailName,])!=0){
-        #getCocktail <- getCocktail[!getCocktail$cocktailName %in% lackIngredient$cocktailName,]
-      #}
+      if(nrow(getCocktail[!getCocktail$cocktailName %in% lackIngredient$cocktailName,])!=0){
+        getCocktail <- getCocktail[!getCocktail$cocktailName %in% lackIngredient$cocktailName,]
+      }
       
       ###Get the total count of all the alcohol matched with the cocktail###
       getCocktail <- sqldf("select cocktailName, sum(isClicked) as count
